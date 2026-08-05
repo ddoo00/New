@@ -226,8 +226,8 @@ body {
 .gs-faq-tag {
   flex: none;
   font-family: 'Gaegu', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
-  font-size: 16px; font-weight: 700; color: #1a1a1a; background: #f2f2f2;
-  border: 1.5px solid #1a1a1a; border-radius: 999px; padding: 6px 14px; white-space: nowrap;
+  font-size: 14px; font-weight: 700; letter-spacing: -1.2px; color: #1a1a1a; background: #f2f2f2;
+  border: 1.5px solid #1a1a1a; border-radius: 999px; padding: 4px 10px; white-space: nowrap;
 }
 .gs-faq-tag.cat-1 { background: #f6c78d; } /* 작업 요청 · 컨펌 — 버튼과 같은 톤 */
 .gs-faq-tag.cat-2 { background: #a9d9f4; } /* 파일 · 에셋 관리 — 하늘색 */
