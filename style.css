@@ -151,36 +151,31 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", sans-serif;
-  background: #fff;
+  background: #7ecc7a;
   color: #111;
   cursor: auto;
   display: flex;
   flex-direction: column;
+  padding-bottom: 48px;
 }
 .gs-body, .gs-body * { cursor: auto; }
 .gs-body button, .gs-body [onclick], .gs-body a { cursor: pointer; }
 .gs-body input { cursor: text; }
 
 /* ── 온보딩 페이지(홈) ── */
-.gs-hero {
-  max-width: 840px;
-  margin: 0 auto;
-  padding: 32px 20px 48px;
-  text-align: center;
-}
+.gs-hero { padding: 0 0 44px; text-align: center; }
 .gs-hero-img {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 20px;
-  margin: 0 0 26px;
+  margin: 0 0 30px;
 }
-.gs-hero-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.gs-hero-actions { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; padding: 0 20px; }
 .gs-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 14px 30px;
+  padding: 16px 34px;
   font-family: 'Gaegu', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
-  font-size: 16px; font-weight: 700;
+  font-size: 19px; font-weight: 700;
   text-decoration: none; color: #1a1a1a;
   border: 2.5px solid #1a1a1a;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
@@ -194,22 +189,25 @@ body {
 
 .gs-section {
   max-width: 720px;
-  margin: 0 auto;
-  padding: 8px 24px 80px;
-  width: 100%;
+  margin: 0 auto 24px;
+  padding: 30px 28px;
+  width: calc(100% - 40px);
   box-sizing: border-box;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.10);
 }
-.gs-section-title { font-size: 13px; font-weight: 700; color: #666; margin: 0 0 14px; }
+.gs-section-title { font-size: 20px; font-weight: 800; color: #111; margin: 0 0 18px; }
 
-.gs-steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 14px; }
-.gs-steps li { font-size: 13.5px; line-height: 1.8; color: #444; }
-.gs-steps li strong { display: block; color: #111; font-weight: 700; margin-bottom: 2px; }
+.gs-steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 16px; }
+.gs-steps li { font-size: 16px; line-height: 1.8; color: #444; }
+.gs-steps li strong { display: block; font-size: 17px; color: #111; font-weight: 700; margin-bottom: 3px; }
 
 /* ── 자주 묻는 질문 ── */
-.gs-faq-sub { font-size: 13px; color: #8a8a8a; margin: 0 0 16px; }
+.gs-faq-sub { font-size: 15px; color: #8a8a8a; margin: 0 0 18px; }
 .gs-search {
   width: 100%; border: 1px solid #dcdcdc; border-radius: 999px;
-  padding: 12px 18px; font-size: 13px; font-family: inherit; outline: none;
+  padding: 14px 20px; font-size: 15px; font-family: inherit; outline: none;
   margin-bottom: 8px; box-sizing: border-box;
 }
 .gs-search:focus { border-color: #111; }
@@ -217,18 +215,18 @@ body {
 .gs-faq-list { border-top: 1px solid #ececec; }
 .gs-faq-row {
   display: flex; align-items: center; gap: 14px;
-  padding: 16px 4px; border-bottom: 1px solid #ececec;
+  padding: 18px 4px; border-bottom: 1px solid #ececec;
   cursor: pointer; text-align: left; background: none; width: 100%;
   font-family: inherit;
 }
 .gs-faq-row:hover { background: #fafafa; }
 .gs-faq-tag {
-  flex: none; font-size: 11px; color: #666; background: #f2f2f2;
-  border-radius: 999px; padding: 5px 11px; white-space: nowrap;
+  flex: none; font-size: 12.5px; color: #666; background: #f2f2f2;
+  border-radius: 999px; padding: 6px 12px; white-space: nowrap;
 }
-.gs-faq-q { flex: 1; font-size: 13.5px; color: #111; }
-.gs-faq-arrow { flex: none; color: #ccc; font-size: 15px; }
-.gs-faq-empty { padding: 40px 4px; text-align: center; color: #999; font-size: 13px; }
+.gs-faq-q { flex: 1; font-size: 15.5px; color: #111; }
+.gs-faq-arrow { flex: none; color: #ccc; font-size: 17px; }
+.gs-faq-empty { padding: 40px 4px; text-align: center; color: #999; font-size: 14.5px; }
 
 /* ── 채팅 ── */
 .gs-chat-page {
@@ -279,7 +277,9 @@ body {
 .gs-chat-inputbar button:disabled { background: #ccc; }
 
 @media (max-width: 560px) {
-  .gs-hero { padding: 20px 16px 36px; }
-  .gs-hero-img { border-radius: 14px; }
-  .gs-btn { padding: 12px 24px; font-size: 15px; }
+  .gs-hero { padding: 0 0 32px; }
+  .gs-hero-img { margin-bottom: 22px; }
+  .gs-btn { padding: 13px 24px; font-size: 16px; }
+  .gs-section { width: calc(100% - 24px); padding: 22px 18px; }
+  .gs-section-title { font-size: 18px; }
 }
