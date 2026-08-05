@@ -123,7 +123,10 @@ exports.handler = async function (event) {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: systemPromptWithExtras }] },
           contents,
-          generationConfig: { maxOutputTokens: 600 }
+          // thinkingBudget: 0 → 답변 전에 내부적으로 "생각"하는 토큰을 쓰지 않게 해서
+          // maxOutputTokens 전부가 실제 답변 텍스트에 쓰이도록 한다.
+          // (이 옵션 없이는 최신 모델이 사고 과정에 토큰을 먼저 써버려 답변이 중간에 잘릴 수 있다.)
+          generationConfig: { maxOutputTokens: 1024, thinkingConfig: { thinkingBudget: 0 } }
         })
       }
     );
