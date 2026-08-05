@@ -173,9 +173,9 @@ body {
 .gs-hero-actions { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; padding: 0 20px; }
 .gs-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 16px 34px;
+  padding: 18px 38px;
   font-family: 'Gaegu', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
-  font-size: 19px; font-weight: 700;
+  font-size: 22px; font-weight: 700;
   text-decoration: none; color: #1a1a1a;
   border: 2.5px solid #1a1a1a;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
@@ -189,44 +189,48 @@ body {
 
 .gs-section {
   max-width: 720px;
-  margin: 0 auto 24px;
-  padding: 30px 28px;
+  margin: 0 auto 28px;
+  padding: 32px 30px;
   width: calc(100% - 40px);
   box-sizing: border-box;
   background: #fff;
-  border-radius: 22px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.10);
+  border: 2.5px solid #1a1a1a;
+  border-radius: 26px;
+  box-shadow: 6px 6px 0 #1a1a1a;
 }
-.gs-section-title { font-size: 20px; font-weight: 800; color: #111; margin: 0 0 18px; }
+.gs-section-title {
+  font-family: 'Gaegu', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 26px; font-weight: 700; color: #111; margin: 0 0 20px;
+}
 
-.gs-steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 16px; }
-.gs-steps li { font-size: 16px; line-height: 1.8; color: #444; }
-.gs-steps li strong { display: block; font-size: 17px; color: #111; font-weight: 700; margin-bottom: 3px; }
+.gs-steps { margin: 0; padding-left: 24px; display: flex; flex-direction: column; gap: 18px; }
+.gs-steps li { font-size: 18px; line-height: 1.8; color: #444; }
+.gs-steps li strong { display: block; font-size: 19px; color: #111; font-weight: 700; margin-bottom: 4px; }
 
 /* ── 자주 묻는 질문 ── */
-.gs-faq-sub { font-size: 15px; color: #8a8a8a; margin: 0 0 18px; }
+.gs-faq-sub { font-size: 17px; color: #8a8a8a; margin: 0 0 20px; }
 .gs-search {
-  width: 100%; border: 1px solid #dcdcdc; border-radius: 999px;
-  padding: 14px 20px; font-size: 15px; font-family: inherit; outline: none;
+  width: 100%; border: 2px solid #1a1a1a; border-radius: 999px;
+  padding: 15px 22px; font-size: 18px; font-family: inherit; outline: none;
   margin-bottom: 8px; box-sizing: border-box;
 }
-.gs-search:focus { border-color: #111; }
+.gs-search:focus { border-color: #1a1a1a; box-shadow: 2px 2px 0 #1a1a1a; }
 
 .gs-faq-list { border-top: 1px solid #ececec; }
 .gs-faq-row {
   display: flex; align-items: center; gap: 14px;
-  padding: 18px 4px; border-bottom: 1px solid #ececec;
+  padding: 20px 4px; border-bottom: 1px solid #ececec;
   cursor: pointer; text-align: left; background: none; width: 100%;
   font-family: inherit;
 }
 .gs-faq-row:hover { background: #fafafa; }
 .gs-faq-tag {
-  flex: none; font-size: 12.5px; color: #666; background: #f2f2f2;
-  border-radius: 999px; padding: 6px 12px; white-space: nowrap;
+  flex: none; font-size: 14px; color: #1a1a1a; background: #fff;
+  border: 1.5px solid #1a1a1a; border-radius: 999px; padding: 6px 13px; white-space: nowrap;
 }
-.gs-faq-q { flex: 1; font-size: 15.5px; color: #111; }
-.gs-faq-arrow { flex: none; color: #ccc; font-size: 17px; }
-.gs-faq-empty { padding: 40px 4px; text-align: center; color: #999; font-size: 14.5px; }
+.gs-faq-q { flex: 1; font-size: 18px; color: #111; }
+.gs-faq-arrow { flex: none; color: #999; font-size: 19px; }
+.gs-faq-empty { padding: 40px 4px; text-align: center; color: #999; font-size: 16px; }
 
 /* ── 채팅 ── */
 .gs-chat-page {
@@ -240,11 +244,11 @@ body {
   padding: 14px 20px; border-bottom: 1px solid #ececec;
 }
 .gs-chat-toolbar-left { display: flex; align-items: center; gap: 10px; }
-.gs-home-link { font-size: 15px; color: #8a8a8a; text-decoration: none; line-height: 1; }
+.gs-home-link { font-size: 18px; color: #8a8a8a; text-decoration: none; line-height: 1; }
 .gs-home-link:hover { color: #111; }
-.gs-chat-toolbar-title { font-size: 13px; font-weight: 700; color: #111; }
+.gs-chat-toolbar-title { font-size: 16px; font-weight: 700; color: #111; }
 .gs-chat-reset {
-  font-size: 11.5px; color: #999; background: none; border: none;
+  font-size: 14px; color: #999; background: none; border: none;
   text-decoration: underline; font-family: inherit;
 }
 .gs-chat-reset:hover { color: #111; }
@@ -254,8 +258,8 @@ body {
   padding: 24px 20px; display: flex; flex-direction: column; gap: 12px;
 }
 .gs-msg {
-  max-width: 88%; padding: 13px 16px; border-radius: 16px;
-  font-size: 13.5px; line-height: 1.7; white-space: pre-wrap;
+  max-width: 88%; padding: 14px 18px; border-radius: 16px;
+  font-size: 16px; line-height: 1.7; white-space: pre-wrap;
 }
 .gs-msg-bot { align-self: flex-start; background: #fff; color: #111; border: 1px solid #ececec; }
 .gs-msg-user { align-self: flex-end; background: #111; color: #fff; }
@@ -267,19 +271,21 @@ body {
 }
 .gs-chat-inputbar input {
   flex: 1; border: 1px solid #dcdcdc; border-radius: 999px;
-  padding: 12px 18px; font-size: 13px; font-family: inherit; outline: none;
+  padding: 13px 20px; font-size: 16px; font-family: inherit; outline: none;
 }
 .gs-chat-inputbar input:focus { border-color: #111; }
 .gs-chat-inputbar button {
   border: none; background: #111; color: #fff; border-radius: 999px;
-  padding: 0 22px; font-size: 13px; font-weight: 600;
+  padding: 0 24px; font-size: 16px; font-weight: 600;
 }
 .gs-chat-inputbar button:disabled { background: #ccc; }
 
 @media (max-width: 560px) {
   .gs-hero { padding: 0 0 32px; }
   .gs-hero-img { margin-bottom: 20px; }
-  .gs-btn { padding: 13px 24px; font-size: 16px; }
-  .gs-section { width: calc(100% - 24px); padding: 22px 18px; }
-  .gs-section-title { font-size: 18px; }
+  .gs-btn { padding: 15px 26px; font-size: 18px; }
+  .gs-section { width: calc(100% - 24px); padding: 24px 20px; }
+  .gs-section-title { font-size: 21px; }
+  .gs-steps li { font-size: 16px; }
+  .gs-faq-q { font-size: 16px; }
 }
