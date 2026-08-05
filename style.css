@@ -25,6 +25,7 @@
 
 
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
@@ -143,8 +144,8 @@ body {
 }
 
 /* ══════════════════════════════════════════════
-   ABBG 실제 사이트 스타일 — 3탭(온보딩 페이지 / 자주 묻는 질문 / 채팅)
-   구조로 재편. "gs-" 접두사 (index.html / faq.html / chat.html 공용)
+   ABBG 실제 사이트 스타일 — 메인(사용법+FAQ 포함) / 채팅
+   2페이지 구조. "gs-" 접두사 (index.html / chat.html 공용)
    ══════════════════════════════════════════════ */
 .gs-body {
   margin: 0;
@@ -159,42 +160,6 @@ body {
 .gs-body, .gs-body * { cursor: auto; }
 .gs-body button, .gs-body [onclick], .gs-body a { cursor: pointer; }
 .gs-body input { cursor: text; }
-
-/* ── 상단 내비게이션 (3개 카테고리만) ── */
-.gs-nav {
-  border-bottom: 1px solid #ececec;
-  background: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-.gs-nav-inner {
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.gs-logo {
-  font-family: Georgia, "Noto Serif KR", serif;
-  font-weight: 700;
-  font-size: 19px;
-  letter-spacing: .3px;
-  color: #111;
-  text-decoration: none;
-}
-.gs-nav-links { display: flex; align-items: center; gap: 26px; }
-.gs-nav-link {
-  font-size: 13.5px;
-  color: #8a8a8a;
-  text-decoration: none;
-  font-weight: 500;
-  white-space: nowrap;
-}
-.gs-nav-link:hover { color: #111; }
-.gs-nav-link.active { color: #111; font-weight: 700; }
 
 /* ── 온보딩 페이지(홈) ── */
 .gs-hero {
@@ -235,30 +200,13 @@ body {
   box-sizing: border-box;
 }
 .gs-section-title { font-size: 13px; font-weight: 700; color: #666; margin: 0 0 14px; }
-.gs-cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.gs-cat-card {
-  display: block; text-align: left; text-decoration: none;
-  border: 1px solid #ececec; border-radius: 14px; padding: 16px 18px;
-  color: #111; font-size: 13px; font-weight: 600;
-  transition: border-color .15s, background .15s;
-}
-.gs-cat-card:hover { border-color: #111; background: #fafafa; }
-.gs-cat-card span { display: block; font-weight: 400; color: #8a8a8a; font-size: 12px; margin-top: 4px; }
+
+.gs-steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 14px; }
+.gs-steps li { font-size: 13.5px; line-height: 1.8; color: #444; }
+.gs-steps li strong { display: block; color: #111; font-weight: 700; margin-bottom: 2px; }
 
 /* ── 자주 묻는 질문 ── */
-.gs-faq-page {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 56px 24px 80px;
-  width: 100%;
-  box-sizing: border-box;
-  flex: 1;
-}
-.gs-faq-page h1 {
-  font-family: Georgia, "Noto Serif KR", serif;
-  font-size: 26px; margin: 0 0 8px; font-weight: 700;
-}
-.gs-faq-sub { font-size: 13px; color: #8a8a8a; margin: 0 0 24px; }
+.gs-faq-sub { font-size: 13px; color: #8a8a8a; margin: 0 0 16px; }
 .gs-search {
   width: 100%; border: 1px solid #dcdcdc; border-radius: 999px;
   padding: 12px 18px; font-size: 13px; font-family: inherit; outline: none;
@@ -293,6 +241,9 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 20px; border-bottom: 1px solid #ececec;
 }
+.gs-chat-toolbar-left { display: flex; align-items: center; gap: 10px; }
+.gs-home-link { font-size: 15px; color: #8a8a8a; text-decoration: none; line-height: 1; }
+.gs-home-link:hover { color: #111; }
 .gs-chat-toolbar-title { font-size: 13px; font-weight: 700; color: #111; }
 .gs-chat-reset {
   font-size: 11.5px; color: #999; background: none; border: none;
@@ -328,10 +279,7 @@ body {
 .gs-chat-inputbar button:disabled { background: #ccc; }
 
 @media (max-width: 560px) {
-  .gs-nav-links { gap: 14px; }
-  .gs-nav-link { font-size: 12px; }
   .gs-hero { padding: 56px 20px 40px; }
   .gs-hero h1 { font-size: 26px; }
-  .gs-cat-grid { grid-template-columns: 1fr; }
   .gs-br-desktop { display: none; }
 }

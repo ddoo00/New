@@ -8,20 +8,12 @@
 </head>
 <body class="gs-body">
 
-<header class="gs-nav">
-  <div class="gs-nav-inner">
-    <a href="index.html" class="gs-logo">그래픽팀</a>
-    <nav class="gs-nav-links">
-      <a href="index.html" class="gs-nav-link">온보딩 페이지</a>
-      <a href="faq.html" class="gs-nav-link">자주 묻는 질문</a>
-      <a href="chat.html" class="gs-nav-link active">채팅</a>
-    </nav>
-  </div>
-</header>
-
 <main class="gs-chat-page">
   <div class="gs-chat-toolbar">
-    <span class="gs-chat-toolbar-title">그래픽팀 온보딩봇</span>
+    <div class="gs-chat-toolbar-left">
+      <a href="index.html" class="gs-home-link" aria-label="홈으로">←</a>
+      <span class="gs-chat-toolbar-title">그래픽팀 온보딩봇</span>
+    </div>
     <button class="gs-chat-reset" id="resetBtn">새 대화</button>
   </div>
   <div class="gs-chat-messages" id="messages"></div>

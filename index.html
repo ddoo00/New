@@ -8,17 +8,6 @@
 </head>
 <body class="gs-body">
 
-<header class="gs-nav">
-  <div class="gs-nav-inner">
-    <a href="index.html" class="gs-logo">그래픽팀</a>
-    <nav class="gs-nav-links">
-      <a href="index.html" class="gs-nav-link active">온보딩 페이지</a>
-      <a href="faq.html" class="gs-nav-link">자주 묻는 질문</a>
-      <a href="chat.html" class="gs-nav-link">채팅</a>
-    </nav>
-  </div>
-</header>
-
 <main class="gs-hero">
   <h1>궁금한 게 있으면<br />온보딩봇에게 물어보세요</h1>
   <p>
@@ -27,29 +16,99 @@
   </p>
   <div class="gs-hero-actions">
     <a href="chat.html" class="gs-btn gs-btn-dark">채팅 시작하기</a>
-    <a href="faq.html" class="gs-btn gs-btn-outline">자주 묻는 질문 보기</a>
+    <a href="#faq" class="gs-btn gs-btn-outline">자주 묻는 질문 보기</a>
   </div>
 </main>
 
 <section class="gs-section">
-  <div class="gs-section-title">카테고리별로 바로 물어보기</div>
-  <div class="gs-cat-grid" id="catGrid"></div>
+  <div class="gs-section-title">챗봇 사용법</div>
+  <ol class="gs-steps">
+    <li><strong>궁금한 걸 그대로 입력하세요.</strong> "내부 컨펌은 어떻게 받아요?"처럼 편하게 물어보면 바로 답해줘요.</li>
+    <li><strong>문서화된 내용만 근거로 답해요.</strong> 팀에서 정리된 내용을 바탕으로 답하고, 없는 내용을 지어내지 않아요.</li>
+    <li><strong>모르는 건 솔직하게 말해요.</strong> 아직 정리되지 않은 부분은 "확인이 필요하다"고 안내하고, 팀장님이나 선임에게 직접 확인하라고 알려줘요.</li>
+  </ol>
 </section>
 
+<section class="gs-section" id="faq">
+  <div class="gs-section-title">자주 묻는 질문</div>
+  <p class="gs-faq-sub">질문을 누르면 바로 채팅 화면으로 넘어가서 답해드려요.</p>
+  <input class="gs-search" id="faqSearch" type="text" placeholder="검색어를 입력하세요" />
+  <div class="gs-faq-list" id="faqList">
+    <div class="gs-faq-empty">불러오는 중...</div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <script>
-const CATEGORIES = [
-  { label: "작업 요청 · 컨펌", desc: "요청부터 컨펌까지 전체 흐름", seed: "작업 요청부터 컨펌까지 전체 흐름을 알려줘" },
-  { label: "파일 · 에셋 관리", desc: "파일/에셋 관리 규칙", seed: "파일이나 에셋은 어떻게 관리해요?" },
-  { label: "리드타임 안내", desc: "리드타임 산정과 안내", seed: "리드타임은 어떻게 안내해요?" },
-  { label: "구독제 업무", desc: "구독제 클라이언트 업무", seed: "구독제 클라이언트 업무는 어떻게 진행해요?" },
-  { label: "툴 사용법", desc: "피그마 · 노션 등", seed: "피그마랑 노션은 어떻게 써야 해요?" },
-  { label: "일정 · 보고", desc: "일정 관리와 보고 방식", seed: "일정 관리랑 보고는 어떻게 해요?" }
+// Supabase 지식베이스가 비었거나 아직 연결 전일 때 보여줄 기본 목록
+const FALLBACK_FAQ = [
+  { category: "작업 요청 · 컨펌", title: "작업 요청부터 컨펌까지 전체 흐름을 알려줘" },
+  { category: "작업 요청 · 컨펌", title: "담당 디자이너는 어떻게 정해져요?" },
+  { category: "작업 요청 · 컨펌", title: "내부 컨펌은 어떻게 요청해요?" },
+  { category: "파일 · 에셋 관리", title: "파일이나 에셋은 어떻게 관리해요?" },
+  { category: "리드타임 안내", title: "리드타임은 어떻게 안내해요?" },
+  { category: "구독제 업무", title: "구독제 클라이언트 업무는 어떻게 진행해요?" },
+  { category: "툴 사용법", title: "피그마랑 노션은 어떻게 써야 해요?" },
+  { category: "일정 · 보고", title: "일정 관리랑 보고는 어떻게 해요?" }
 ];
 
-const catGrid = document.getElementById("catGrid");
-catGrid.innerHTML = CATEGORIES.map(c =>
-  `<a class="gs-cat-card" href="chat.html?q=${encodeURIComponent(c.seed)}">${c.label}<span>${c.desc}</span></a>`
-).join("");
+const faqListEl = document.getElementById("faqList");
+const faqSearchEl = document.getElementById("faqSearch");
+let allFaqItems = [];
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+function goToChat(question) {
+  window.location.href = "chat.html?q=" + encodeURIComponent(question);
+}
+
+function renderFaqList(items) {
+  if (!items.length) {
+    faqListEl.innerHTML = '<div class="gs-faq-empty">검색 결과가 없어요.</div>';
+    return;
+  }
+  faqListEl.innerHTML = items.map((item, i) => `
+    <button class="gs-faq-row" data-i="${i}">
+      <span class="gs-faq-tag">${escapeHtml(item.category)}</span>
+      <span class="gs-faq-q">${escapeHtml(item.title)}</span>
+      <span class="gs-faq-arrow">›</span>
+    </button>
+  `).join("");
+  faqListEl.querySelectorAll(".gs-faq-row").forEach(row => {
+    row.addEventListener("click", () => {
+      const item = items[Number(row.dataset.i)];
+      goToChat(item.title);
+    });
+  });
+}
+
+function applySearch() {
+  const q = faqSearchEl.value.trim().toLowerCase();
+  if (!q) { renderFaqList(allFaqItems); return; }
+  const filtered = allFaqItems.filter(item =>
+    item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q)
+  );
+  renderFaqList(filtered);
+}
+
+faqSearchEl.addEventListener("input", applySearch);
+
+async function loadFaqItems() {
+  const entries = await fetchKnowledgeEntries();
+  if (entries && entries.length) {
+    allFaqItems = entries.map(e => ({ category: e.category || "기타", title: e.title }));
+  } else {
+    allFaqItems = FALLBACK_FAQ;
+  }
+  renderFaqList(allFaqItems);
+}
+
+loadFaqItems();
 </script>
 </body>
 </html>
