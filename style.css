@@ -209,21 +209,20 @@ body {
 
 /* ── 자주 묻는 질문 ── */
 .gs-faq-sub { font-size: 17px; color: #8a8a8a; margin: 0 0 20px; }
-.gs-search {
-  width: 100%; border: 2px solid #1a1a1a; border-radius: 999px;
-  padding: 15px 22px; font-size: 18px; font-family: inherit; outline: none;
-  margin-bottom: 8px; box-sizing: border-box;
-}
-.gs-search:focus { border-color: #1a1a1a; box-shadow: 2px 2px 0 #1a1a1a; }
 
-.gs-faq-list { border-top: 1px solid #ececec; }
+.gs-faq-list { display: flex; flex-direction: column; gap: 12px; }
 .gs-faq-row {
   display: flex; align-items: center; gap: 14px;
-  padding: 20px 4px; border-bottom: 1px solid #ececec;
-  cursor: pointer; text-align: left; background: none; width: 100%;
+  padding: 16px 20px;
+  border: 2px solid #1a1a1a;
+  border-radius: 16px;
+  box-shadow: 3px 3px 0 #1a1a1a;
+  cursor: pointer; text-align: left; background: #fff; width: 100%;
   font-family: inherit;
+  transition: transform .12s ease, box-shadow .12s ease;
 }
-.gs-faq-row:hover { background: #fafafa; }
+.gs-faq-row:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 #1a1a1a; }
+.gs-faq-row:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #1a1a1a; }
 .gs-faq-tag {
   flex: none; font-size: 14px; color: #1a1a1a; background: #fff;
   border: 1.5px solid #1a1a1a; border-radius: 999px; padding: 6px 13px; white-space: nowrap;

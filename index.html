@@ -31,7 +31,6 @@
 <section class="gs-section" id="faq">
   <div class="gs-section-title">자주 묻는 질문</div>
   <p class="gs-faq-sub">질문을 누르면 바로 채팅 화면으로 넘어가서 답해드려요.</p>
-  <input class="gs-search" id="faqSearch" type="text" placeholder="검색어를 입력하세요" />
   <div class="gs-faq-list" id="faqList">
     <div class="gs-faq-empty">불러오는 중...</div>
   </div>
@@ -53,7 +52,6 @@ const FALLBACK_FAQ = [
 ];
 
 const faqListEl = document.getElementById("faqList");
-const faqSearchEl = document.getElementById("faqSearch");
 let allFaqItems = [];
 
 function escapeHtml(str) {
@@ -85,17 +83,6 @@ function renderFaqList(items) {
     });
   });
 }
-
-function applySearch() {
-  const q = faqSearchEl.value.trim().toLowerCase();
-  if (!q) { renderFaqList(allFaqItems); return; }
-  const filtered = allFaqItems.filter(item =>
-    item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q)
-  );
-  renderFaqList(filtered);
-}
-
-faqSearchEl.addEventListener("input", applySearch);
 
 async function loadFaqItems() {
   const entries = await fetchKnowledgeEntries();
