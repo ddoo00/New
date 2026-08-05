@@ -172,14 +172,14 @@ body {
   display: block;
   width: 100%;
   height: auto;
-  margin: 0 0 24px;
+  margin: 0 0 14px;
 }
-.gs-hero-actions { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; padding: 0 20px; }
+.gs-hero-actions { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 0 20px; }
 .gs-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 18px 38px;
+  padding: 22px 46px;
   font-family: 'Gaegu', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
-  font-size: 22px; font-weight: 700;
+  font-size: 26px; font-weight: 700;
   text-decoration: none; color: #1a1a1a;
   border: 2.5px solid #1a1a1a;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
@@ -327,8 +327,8 @@ body {
 
 @media (max-width: 560px) {
   .gs-hero { padding: 0 0 32px; }
-  .gs-hero-img { margin-bottom: 20px; }
-  .gs-btn { padding: 15px 26px; font-size: 18px; }
+  .gs-hero-img { margin-bottom: 12px; }
+  .gs-btn { padding: 17px 30px; font-size: 20px; }
   .gs-section { width: calc(100% - 24px); padding: 24px 20px; }
   .gs-section-title { font-size: 21px; }
   .gs-step-body p { font-size: 15.5px; }
