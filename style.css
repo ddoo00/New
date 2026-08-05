@@ -339,6 +339,16 @@ body {
 .gs-msg-user { align-self: flex-end; background: #f6c78d; color: #1a1a1a; border-bottom-right-radius: 4px; }
 .gs-msg-typing { align-self: flex-start; color: #9ca3af; font-style: italic; background: none; border: none; box-shadow: none; padding: 0 4px; }
 
+.gs-suggest-list { display: flex; flex-direction: column; gap: 8px; align-self: flex-start; max-width: 88%; }
+.gs-suggest-chip {
+  text-align: left; font-family: inherit; font-size: 14px; color: #1a1a1a;
+  background: #fffaf3; border: 2px solid #1a1a1a; border-radius: 14px;
+  padding: 10px 14px; box-shadow: 2px 2px 0 #1a1a1a; cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.gs-suggest-chip:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 #1a1a1a; }
+.gs-suggest-chip:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #1a1a1a; }
+
 .gs-chat-inputbar {
   display: flex; gap: 8px; padding: 14px 16px 18px;
   border-top: 2px solid #1a1a1a; background: #fff;

@@ -39,6 +39,14 @@ const resetBtn = document.getElementById("resetBtn");
 let history = [];
 let extraKnowledgeText = ""; // admin.html에서 등록한 지식 (Supabase에서 불러옴)
 
+// 대화가 비어있을 때(첫 진입) 눌러서 바로 물어볼 수 있는 추천 질문
+const SUGGESTED_QUESTIONS = [
+  "작업 요청부터 컨펌까지 전체 흐름을 알려줘",
+  "내부 컨펌은 어떻게 요청해요?",
+  "파일이나 에셋은 어떻게 관리해요?",
+  "리드타임은 어떻게 안내해요?"
+];
+
 function loadHistory() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -57,6 +65,7 @@ function renderMessages() {
   messagesEl.innerHTML = "";
   if (history.length === 0) {
     addBubble("bot", "안녕하세요! 그래픽팀 온보딩 챗봇이에요. 작업 요청부터 내부 컨펌, 파일 관리까지 궁금한 걸 물어보세요.", false);
+    renderSuggestedQuestions();
     return;
   }
   history.forEach(m => {
@@ -65,6 +74,22 @@ function renderMessages() {
     div.textContent = m.text;
     messagesEl.appendChild(div);
   });
+  scrollToBottom();
+}
+
+function renderSuggestedQuestions() {
+  const wrap = document.createElement("div");
+  wrap.className = "gs-suggest-list";
+  wrap.id = "suggestedQuestions";
+  SUGGESTED_QUESTIONS.forEach(q => {
+    const btn = document.createElement("button");
+    btn.className = "gs-suggest-chip";
+    btn.type = "button";
+    btn.textContent = q;
+    btn.addEventListener("click", () => askQuestion(q));
+    wrap.appendChild(btn);
+  });
+  messagesEl.appendChild(wrap);
   scrollToBottom();
 }
 
@@ -102,6 +127,8 @@ async function sendMessage() {
 
 async function askQuestion(text) {
   sendBtn.disabled = true;
+  const sugg = document.getElementById("suggestedQuestions");
+  if (sugg) sugg.remove();
   addBubble("user", text);
   showTyping();
 
