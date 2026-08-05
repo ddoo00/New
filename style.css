@@ -151,7 +151,7 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", sans-serif;
-  background: #7ecc7a;
+  background: #78bb73;
   color: #111;
   cursor: auto;
   display: flex;
@@ -163,17 +163,14 @@ body {
 .gs-body input { cursor: text; }
 
 /* ── 온보딩 페이지(홈) ── */
-.gs-hero { padding: 24px 20px 40px; text-align: center; }
+.gs-hero { padding: 0 0 40px; text-align: center; }
 .gs-hero-img {
   display: block;
   width: 100%;
-  max-width: 1100px;
   height: auto;
-  margin: 0 auto 24px;
-  border-radius: 26px;
-  box-shadow: 0 14px 34px rgba(0,0,0,.18);
+  margin: 0 0 24px;
 }
-.gs-hero-actions { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; }
+.gs-hero-actions { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; padding: 0 20px; }
 .gs-btn {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 16px 34px;
@@ -280,8 +277,8 @@ body {
 .gs-chat-inputbar button:disabled { background: #ccc; }
 
 @media (max-width: 560px) {
-  .gs-hero { padding: 16px 14px 32px; }
-  .gs-hero-img { border-radius: 18px; margin-bottom: 20px; }
+  .gs-hero { padding: 0 0 32px; }
+  .gs-hero-img { margin-bottom: 20px; }
   .gs-btn { padding: 13px 24px; font-size: 16px; }
   .gs-section { width: calc(100% - 24px); padding: 22px 18px; }
   .gs-section-title { font-size: 18px; }
