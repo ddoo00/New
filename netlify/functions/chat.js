@@ -67,6 +67,12 @@ const KNOWLEDGE_BASE = `
 - "(미확인)"으로 표시된 부분에 대한 질문이면, 아직 팀에서 정리되지 않았다고 솔직히 말하고 팀장이나 선임에게 직접 확인하라고 안내하라.
 - 지식베이스에 아예 없는 카테고리(파일/에셋 관리, 툴 사용법 세부, 일정/보고 체계) 질문이면, 해당 영역은 아직 문서화되지 않았다고 답하라.
 - 답은 친절하고 간결한 한국어 존댓말로 하라. 필요하면 번호나 화살표(→)로 단계를 표현해도 좋다. 3~6문장 내외로 간결하게.
+- 답변 맨 마지막 줄에, 실제로 근거로 사용한 항목의 제목만 아래 형식으로 정확히 표시하라(제목은 지식베이스에 있는 "N단계. ..." 표기, "=== ... ===" 섹션 제목, 또는 "[관리자 페이지에서 추가로 등록한 지식]"의 항목 제목을 그대로 사용하고, 앞뒤 기호는 빼라):
+  [출처: 제목1 | 제목2]
+  근거로 쓴 항목이 없거나 지식베이스 전체가 문서화되지 않았다고 답한 경우에는 이 줄을 아예 쓰지 마라. 제목을 지어내지 마라.
+- 그 다음 줄에는, 사용자가 방금 답변에 이어서 물어볼 만한 질문을 2~3개 제안하라. 반드시 지식베이스로 답할 수 있는 질문만 제안하고, 방금 이미 물어본 질문과 겹치지 않게 하라:
+  [추천질문: 질문1 | 질문2 | 질문3]
+  적절한 후속 질문이 떠오르지 않으면 이 줄도 생략해라.
 `;
 
 const SYSTEM_PROMPT = `당신은 그래픽팀 신규 입사자를 돕는 사내 프로세스 안내 챗봇입니다. 아래 지식베이스와 답변 규칙을 반드시 지켜서 사용자 질문에 답하세요.\n\n${KNOWLEDGE_BASE}`;
@@ -142,14 +148,30 @@ exports.handler = async function (event) {
     }
 
     const candidate = data.candidates && data.candidates[0];
-    const answer =
+    const rawAnswer =
       (candidate && candidate.content && candidate.content.parts && candidate.content.parts[0] && candidate.content.parts[0].text) ||
       "답변을 생성하지 못했어요. (안전 필터에 걸렸거나 응답이 비어있을 수 있어요)";
+
+    // 답변 끝의 "[출처: ...]" / "[추천질문: ...]" 표기를 분리해서 각각 배열로 뽑아낸다.
+    let answer = rawAnswer;
+    let citations = [];
+    let followups = [];
+
+    const citeMatch = answer.match(/\[출처:\s*([^\]]+)\]/);
+    if (citeMatch) {
+      citations = citeMatch[1].split(/[|,]/).map(s => s.trim()).filter(Boolean);
+      answer = answer.replace(citeMatch[0], "").trim();
+    }
+    const followMatch = answer.match(/\[추천질문:\s*([^\]]+)\]/);
+    if (followMatch) {
+      followups = followMatch[1].split(/[|,]/).map(s => s.trim()).filter(Boolean);
+      answer = answer.replace(followMatch[0], "").trim();
+    }
 
     return {
       statusCode: 200,
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ answer })
+      body: JSON.stringify({ answer, citations, followups })
     };
   } catch (err) {
     return {
