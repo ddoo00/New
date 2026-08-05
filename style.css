@@ -163,6 +163,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 .gs-body, .gs-body * { cursor: auto; }
+/* 채팅 페이지(.gs-chat-page)가 있는 화면은 세로 중앙 정렬 */
+.gs-body:has(.gs-chat-page) { justify-content: center; padding-bottom: 0; }
 .gs-body button, .gs-body [onclick], .gs-body a { cursor: pointer; }
 .gs-body input { cursor: text; }
 
@@ -290,7 +292,7 @@ body {
   border-radius: 40px;
   box-shadow: 8px 8px 0 #1a1a1a;
   overflow: hidden;
-  height: min(920px, calc(100vh - 40px));
+  height: min(980px, calc(100vh - 40px));
   position: relative;
 }
 .gs-chat-notch {
