@@ -6,8 +6,8 @@
 // 아직 설정 전이면 그대로 둬도 챗봇은 정상 작동하고,
 // 대화 로그 저장 / 인기 질문 기능만 비활성화됩니다.
 // ─────────────────────────────────────────────────────────
-window.SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
-window.SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+window.SUPABASE_URL = "https://xhdenshsesazmqhbzgoa.supabase.co";
+window.SUPABASE_ANON_KEY = "sb_publishable_GbcBi9nY5TZmbfuyPnIqOw_Q7SBgCKL";
 
 // admin.html(지식 관리 페이지) 접근용 간단한 비밀번호.
 // ⚠️ 진짜 로그인 인증이 아니라 브라우저에서 문자열만 비교하는 수준의 가벼운 잠금이에요.
