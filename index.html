@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>그래픽팀 온보딩 챗봇</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="cb-body">
+
+<div class="cb-shell" id="cbShell">
+  <aside class="cb-sidebar" id="cbSidebar">
+    <div class="cb-sidebar-top">
+      <div class="cb-bot-avatar">🤖</div>
+      <div class="cb-bot-title">그래픽팀 온보딩봇</div>
+      <button class="cb-collapse" id="cbCollapseBtn" title="사이드바 접기/펼치기">▤</button>
+    </div>
+    <button class="cb-new-chat" id="cbNewChat">✎ 새 채팅</button>
+    <div class="cb-history-label">자주 묻는 질문</div>
+    <div class="cb-history" id="cbHistory">
+      <div class="cb-history-empty">불러오는 중...</div>
+    </div>
+    <div class="cb-sidebar-footer">
+      <a href="admin.html" class="cb-settings" title="관리자">⚙ 관리자</a>
+    </div>
+  </aside>
+
+  <main class="cb-main">
+    <div class="cb-messages" id="cbMessages"></div>
+    <div class="cb-inputbar-wrap">
+      <div class="cb-inputbar">
+        <input id="cbInput" type="text" placeholder="그래픽팀 온보딩봇와 대화" />
+        <button id="cbSendBtn" class="cb-send" title="보내기">➤</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+const DEFAULT_SUGGESTIONS = [
+  "상세페이지 작업하려면 며칠 걸려요?",
+  "로고 제작 요청 받으면 뭐라고 답해요?",
+  "클라이언트한테 원본 파일 줘도 되나요?",
+  "수정 요청이 계속 들어올 때 어떻게 대응해요?"
+];
+
+const STORAGE_KEY = "onboarding_chatbot_history_v1";
+const cbMessages = document.getElementById("cbMessages");
+const cbInput = document.getElementById("cbInput");
+const cbSendBtn = document.getElementById("cbSendBtn");
+const cbHistory = document.getElementById("cbHistory");
+
+let history = [];
+let extraKnowledgeText = "";
+let currentSuggestions = DEFAULT_SUGGESTIONS;
+
+function loadHistoryFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    history = raw ? JSON.parse(raw) : [];
+  } catch (e) { history = []; }
+}
+function saveHistoryToStorage() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch (e) {}
+}
+
+function welcomeHTML() {
+  const chips = currentSuggestions.map(q => `<button class="cb-chip" data-q="${escapeAttr(q)}">${escapeHtml(q)}</button>`).join("");
+  return `
+    <div class="cb-msg-row bot">
+      <div class="cb-avatar">🤖</div>
+      <div class="cb-bubble bot">
+        안녕하세요! 👋 그래픽팀 온보딩봇이에요.<br />
+        팀 소개, 업무 가이드, 리드타임, 구독제 정책, 실무 FAQ까지 궁금한 건 뭐든 편하게 물어보세요.<br />
+        사내 참고용 정보라 클라이언트에게 그대로 전달하시기 전엔 표현을 다듬어서 안내해주시면 좋아요!<br />
+        무엇이 궁금하신가요?
+        <div class="cb-chip-grid">${chips}</div>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+function escapeAttr(str) {
+  return (str || "").replace(/"/g, "&quot;");
+}
+
+function renderMessages() {
+  cbMessages.innerHTML = "";
+  if (history.length === 0) {
+    cbMessages.insertAdjacentHTML("beforeend", welcomeHTML());
+    bindChips();
+    return;
+  }
+  history.forEach(m => appendBubble(m.role === "user" ? "user" : "bot", m.text, false));
+  scrollToBottom();
+}
+
+function bindChips() {
+  cbMessages.querySelectorAll(".cb-chip").forEach(btn => {
+    btn.addEventListener("click", () => askQuestion(btn.dataset.q));
+  });
+}
+
+function appendBubble(role, text, animate) {
+  const row = document.createElement("div");
+  row.className = "cb-msg-row " + role;
+  if (role === "bot") {
+    row.innerHTML = `<div class="cb-avatar">🤖</div><div class="cb-bubble bot"></div>`;
+    row.querySelector(".cb-bubble").textContent = text;
+  } else {
+    row.innerHTML = `<div class="cb-bubble user"></div>`;
+    row.querySelector(".cb-bubble").textContent = text;
+  }
+  cbMessages.appendChild(row);
+  scrollToBottom();
+}
+
+function scrollToBottom() {
+  cbMessages.scrollTop = cbMessages.scrollHeight;
+}
+
+function addMessage(role, text, persist) {
+  appendBubble(role, text, true);
+  if (persist !== false) {
+    history.push({ role, text });
+    saveHistoryToStorage();
+  }
+}
+
+function showTyping() {
+  const row = document.createElement("div");
+  row.className = "cb-msg-row bot";
+  row.id = "cbTyping";
+  row.innerHTML = `<div class="cb-avatar">🤖</div><div class="cb-bubble bot cb-typing">답변 작성 중...</div>`;
+  cbMessages.appendChild(row);
+  scrollToBottom();
+}
+function hideTyping() {
+  const el = document.getElementById("cbTyping");
+  if (el) el.remove();
+}
+
+async function sendMessage() {
+  const text = cbInput.value.trim();
+  if (!text) return;
+  cbInput.value = "";
+  await askQuestion(text);
+}
+
+async function askQuestion(text) {
+  cbSendBtn.disabled = true;
+  addMessage("user", text);
+  showTyping();
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        message: text,
+        history: history.slice(-10).map(m => ({ role: m.role === "user" ? "user" : "assistant", text: m.text })),
+        extraKnowledge: extraKnowledgeText
+      })
+    });
+    hideTyping();
+    const data = await res.json();
+    if (!res.ok) {
+      addMessage("bot", "오류: " + (data.error || "답변을 가져오지 못했어요."), false);
+      return;
+    }
+    const answer = (data.answer || "죄송해요, 답변을 만들지 못했어요.").trim();
+    addMessage("bot", answer);
+    logChatToSupabase(text, answer);
+  } catch (err) {
+    hideTyping();
+    addMessage("bot", "네트워크 오류가 났어요. 잠시 후 다시 시도해 주세요.", false);
+  } finally {
+    cbSendBtn.disabled = false;
+    cbInput.focus();
+  }
+}
+
+function renderSidebarHistory(list) {
+  cbHistory.innerHTML = "";
+  if (!list || list.length === 0) {
+    cbHistory.innerHTML = '<div class="cb-history-empty">아직 질문 기록이 없어요</div>';
+    return;
+  }
+  list.forEach(q => {
+    const item = document.createElement("div");
+    item.className = "cb-history-item";
+    item.textContent = q;
+    item.title = q;
+    item.onclick = () => askQuestion(q);
+    cbHistory.appendChild(item);
+  });
+}
+
+cbSendBtn.addEventListener("click", sendMessage);
+cbInput.addEventListener("keydown", e => { if (e.key === "Enter") sendMessage(); });
+
+document.getElementById("cbNewChat").addEventListener("click", () => {
+  history = [];
+  saveHistoryToStorage();
+  renderMessages();
+});
+
+document.getElementById("cbCollapseBtn").addEventListener("click", () => {
+  document.getElementById("cbShell").classList.toggle("sidebar-collapsed");
+});
+
+loadHistoryFromStorage();
+renderMessages();
+fetchKnowledgeEntries().then(entries => { extraKnowledgeText = formatKnowledgeForPrompt(entries); });
+loadPopularQuestions(DEFAULT_SUGGESTIONS, 6).then(list => {
+  currentSuggestions = list.slice(0, 4);
+  renderSidebarHistory(list);
+  if (history.length === 0) renderMessages();
+});
+</script>
+</body>
+</html>

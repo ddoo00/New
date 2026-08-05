@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>지식 관리 — 그래픽팀 온보딩 챗봇</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/quiple/galmuri@1.4/dist/galmuri.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="lockScreen" class="admin-lock">
+  <div class="win-dots" style="justify-content:center;margin-bottom:10px;"><span></span><span></span><span></span></div>
+  <h2 style="margin:0 0 4px;font-size:13px;">🔒 지식 관리 페이지</h2>
+  <p style="margin:0;font-size:11px;color:#8a8a9a;">비밀번호를 입력하세요</p>
+  <input id="pwInput" type="password" placeholder="비밀번호" />
+  <button id="pwSubmit">입장</button>
+  <div id="pwError" style="color:#b42318;font-size:11px;margin-top:8px;"></div>
+  <div class="admin-warn">이 페이지는 간단한 비밀번호로만 보호돼요. 실제 로그인 인증이 아니니, 이 링크는 팀장님/선임 정도만 알고 있게 해주세요.</div>
+</div>
+
+<div id="adminScreen" class="page" style="display:none;">
+  <div class="win-bar">
+    <div class="win-dots"><span></span><span></span><span></span></div>
+    <div class="win-title">ADMIN.EXE</div>
+  </div>
+  <div class="admin-header">
+    <h1>📚 지식 관리</h1>
+    <p>여기서 추가/수정/삭제한 내용이 챗봇 답변에 바로 반영돼요. 코드나 GitHub은 건드리지 않아도 됩니다.</p>
+  </div>
+
+  <div class="admin-body">
+    <div>
+      <h2 style="font-size:13.5px;margin:0 0 10px;">새 지식 추가</h2>
+      <div class="entry-form">
+        <div class="row">
+          <div>
+            <label>카테고리</label>
+            <select id="fCategory"></select>
+          </div>
+          <div>
+            <label>상태</label>
+            <div class="status-toggle" style="margin-top:9px;">
+              <label><input type="radio" name="fStatus" value="confirmed" checked /> 확정</label>
+              <label><input type="radio" name="fStatus" value="pending" /> 미확인</label>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label>제목 (질문처럼 짧게)</label>
+          <input id="fTitle" type="text" placeholder="예: 파일 네이밍 규칙" />
+        </div>
+        <div>
+          <label>내용</label>
+          <textarea id="fContent" placeholder="챗봇이 이 내용을 그대로 근거로 답변에 사용해요. 최대한 구체적으로 적어주세요."></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" id="saveBtn">저장</button>
+          <button class="btn-secondary" id="cancelEditBtn" style="display:none;">수정 취소</button>
+        </div>
+        <div id="formMsg" style="font-size:12px;"></div>
+      </div>
+    </div>
+
+    <div id="entryGroups"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+const lockScreen = document.getElementById("lockScreen");
+const adminScreen = document.getElementById("adminScreen");
+const pwInput = document.getElementById("pwInput");
+const pwSubmit = document.getElementById("pwSubmit");
+const pwError = document.getElementById("pwError");
+
+pwSubmit.addEventListener("click", tryUnlock);
+pwInput.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+
+function tryUnlock() {
+  if (pwInput.value === window.ADMIN_PASSWORD) {
+    lockScreen.style.display = "none";
+    adminScreen.style.display = "block";
+    initAdmin();
+  } else {
+    pwError.textContent = "비밀번호가 틀렸어요.";
+  }
+}
+
+// ── 관리자 화면 로직 ──────────────────────────
+const fCategory = document.getElementById("fCategory");
+const fTitle = document.getElementById("fTitle");
+const fContent = document.getElementById("fContent");
+const saveBtn = document.getElementById("saveBtn");
+const cancelEditBtn = document.getElementById("cancelEditBtn");
+const formMsg = document.getElementById("formMsg");
+const entryGroups = document.getElementById("entryGroups");
+
+let editingId = null;
+
+function initAdmin() {
+  if (!isSupabaseConfigured()) {
+    entryGroups.innerHTML = '<p class="empty-note">Supabase가 아직 연결되지 않았어요. config.js에 SUPABASE_URL / SUPABASE_ANON_KEY를 먼저 채워주세요.</p>';
+    saveBtn.disabled = true;
+    return;
+  }
+  (window.KNOWLEDGE_CATEGORIES || ["기타"]).forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = cat;
+    fCategory.appendChild(opt);
+  });
+  loadEntries();
+}
+
+function getFormStatus() {
+  const checked = document.querySelector('input[name="fStatus"]:checked');
+  return checked ? checked.value : "confirmed";
+}
+
+function resetForm() {
+  editingId = null;
+  fTitle.value = "";
+  fContent.value = "";
+  fCategory.selectedIndex = 0;
+  document.querySelector('input[name="fStatus"][value="confirmed"]').checked = true;
+  saveBtn.textContent = "저장";
+  cancelEditBtn.style.display = "none";
+  formMsg.textContent = "";
+}
+
+saveBtn.addEventListener("click", async () => {
+  const title = fTitle.value.trim();
+  const content = fContent.value.trim();
+  if (!title || !content) {
+    formMsg.style.color = "#b42318";
+    formMsg.textContent = "제목과 내용을 둘 다 입력해 주세요.";
+    return;
+  }
+  const entry = {
+    category: fCategory.value,
+    title,
+    content,
+    status: getFormStatus()
+  };
+  saveBtn.disabled = true;
+  try {
+    if (editingId) {
+      await updateKnowledgeEntry(editingId, entry);
+      formMsg.style.color = "#15803d";
+      formMsg.textContent = "수정했어요.";
+    } else {
+      await createKnowledgeEntry(entry);
+      formMsg.style.color = "#15803d";
+      formMsg.textContent = "추가했어요.";
+    }
+    resetForm();
+    loadEntries();
+  } catch (e) {
+    formMsg.style.color = "#b42318";
+    formMsg.textContent = "저장 중 오류가 났어요: " + (e.message || e);
+  } finally {
+    saveBtn.disabled = false;
+  }
+});
+
+cancelEditBtn.addEventListener("click", resetForm);
+
+function startEdit(entry) {
+  editingId = entry.id;
+  fCategory.value = entry.category;
+  fTitle.value = entry.title;
+  fContent.value = entry.content;
+  document.querySelector(`input[name="fStatus"][value="${entry.status}"]`).checked = true;
+  saveBtn.textContent = "수정 저장";
+  cancelEditBtn.style.display = "inline-block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function removeEntry(id) {
+  if (!confirm("이 지식을 삭제할까요?")) return;
+  try {
+    await deleteKnowledgeEntry(id);
+    loadEntries();
+  } catch (e) {
+    alert("삭제 중 오류가 났어요: " + (e.message || e));
+  }
+}
+
+async function loadEntries() {
+  entryGroups.innerHTML = '<p class="empty-note">불러오는 중...</p>';
+  const entries = await fetchKnowledgeEntries();
+  if (entries.length === 0) {
+    entryGroups.innerHTML = '<p class="empty-note">아직 등록된 지식이 없어요. 위에서 첫 항목을 추가해 보세요.</p>';
+    return;
+  }
+  const byCategory = {};
+  entries.forEach(e => {
+    const cat = e.category || "기타";
+    if (!byCategory[cat]) byCategory[cat] = [];
+    byCategory[cat].push(e);
+  });
+
+  entryGroups.innerHTML = "";
+  Object.keys(byCategory).forEach(cat => {
+    const group = document.createElement("div");
+    group.className = "entry-group";
+    const h2 = document.createElement("h2");
+    h2.textContent = `${cat} (${byCategory[cat].length})`;
+    group.appendChild(h2);
+
+    byCategory[cat].forEach(entry => {
+      const card = document.createElement("div");
+      card.className = "entry-card";
+      const badgeClass = entry.status === "pending" ? "pending" : "confirmed";
+      const badgeText = entry.status === "pending" ? "미확인" : "확정";
+      card.innerHTML = `
+        <div class="top">
+          <div class="title">${escapeHtml(entry.title)}</div>
+          <span class="badge ${badgeClass}">${badgeText}</span>
+        </div>
+        <div class="content">${escapeHtml(entry.content)}</div>
+        <div class="entry-actions">
+          <button data-action="edit">수정</button>
+          <button data-action="delete" class="danger">삭제</button>
+        </div>
+      `;
+      card.querySelector('[data-action="edit"]').onclick = () => startEdit(entry);
+      card.querySelector('[data-action="delete"]').onclick = () => removeEntry(entry.id);
+      group.appendChild(card);
+    });
+
+    entryGroups.appendChild(group);
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>

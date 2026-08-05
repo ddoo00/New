@@ -1,0 +1,8 @@
+{
+  "name": "graphic-team-onboarding-chatbot",
+  "version": "1.0.0",
+  "description": "그래픽팀 온보딩 챗봇 - 정적 프론트엔드 + Netlify Function 백엔드",
+  "engines": {
+    "node": ">=18"
+  }
+}
