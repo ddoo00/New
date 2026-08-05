@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>자주 묻는 질문 — 그래픽팀 온보딩 챗봇</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="gs-body">
+
+<header class="gs-nav">
+  <div class="gs-nav-inner">
+    <a href="index.html" class="gs-logo">그래픽팀</a>
+    <nav class="gs-nav-links">
+      <a href="index.html" class="gs-nav-link">온보딩 페이지</a>
+      <a href="faq.html" class="gs-nav-link active">자주 묻는 질문</a>
+      <a href="chat.html" class="gs-nav-link">채팅</a>
+    </nav>
+  </div>
+</header>
+
+<main class="gs-faq-page">
+  <h1>자주 묻는 질문</h1>
+  <p class="gs-faq-sub">질문을 누르면 바로 채팅 화면으로 넘어가서 답해드려요.</p>
+  <input class="gs-search" id="faqSearch" type="text" placeholder="검색어를 입력하세요" />
+  <div class="gs-faq-list" id="faqList">
+    <div class="gs-faq-empty">불러오는 중...</div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+// Supabase 지식베이스가 비었거나 아직 연결 전일 때 보여줄 기본 목록
+const FALLBACK_FAQ = [
+  { category: "작업 요청 · 컨펌", title: "작업 요청부터 컨펌까지 전체 흐름을 알려줘" },
+  { category: "작업 요청 · 컨펌", title: "담당 디자이너는 어떻게 정해져요?" },
+  { category: "작업 요청 · 컨펌", title: "내부 컨펌은 어떻게 요청해요?" },
+  { category: "파일 · 에셋 관리", title: "파일이나 에셋은 어떻게 관리해요?" },
+  { category: "리드타임 안내", title: "리드타임은 어떻게 안내해요?" },
+  { category: "구독제 업무", title: "구독제 클라이언트 업무는 어떻게 진행해요?" },
+  { category: "툴 사용법", title: "피그마랑 노션은 어떻게 써야 해요?" },
+  { category: "일정 · 보고", title: "일정 관리랑 보고는 어떻게 해요?" }
+];
+
+const faqListEl = document.getElementById("faqList");
+const faqSearchEl = document.getElementById("faqSearch");
+let allFaqItems = [];
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+function goToChat(question) {
+  window.location.href = "chat.html?q=" + encodeURIComponent(question);
+}
+
+function renderFaqList(items) {
+  if (!items.length) {
+    faqListEl.innerHTML = '<div class="gs-faq-empty">검색 결과가 없어요.</div>';
+    return;
+  }
+  faqListEl.innerHTML = items.map((item, i) => `
+    <button class="gs-faq-row" data-i="${i}">
+      <span class="gs-faq-tag">${escapeHtml(item.category)}</span>
+      <span class="gs-faq-q">${escapeHtml(item.title)}</span>
+      <span class="gs-faq-arrow">›</span>
+    </button>
+  `).join("");
+  faqListEl.querySelectorAll(".gs-faq-row").forEach(row => {
+    row.addEventListener("click", () => {
+      const item = items[Number(row.dataset.i)];
+      goToChat(item.title);
+    });
+  });
+}
+
+function applySearch() {
+  const q = faqSearchEl.value.trim().toLowerCase();
+  if (!q) { renderFaqList(allFaqItems); return; }
+  const filtered = allFaqItems.filter(item =>
+    item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q)
+  );
+  renderFaqList(filtered);
+}
+
+faqSearchEl.addEventListener("input", applySearch);
+
+async function loadFaqItems() {
+  const entries = await fetchKnowledgeEntries();
+  if (entries && entries.length) {
+    allFaqItems = entries.map(e => ({ category: e.category || "기타", title: e.title }));
+  } else {
+    allFaqItems = FALLBACK_FAQ;
+  }
+  renderFaqList(allFaqItems);
+}
+
+loadFaqItems();
+</script>
+</body>
+</html>

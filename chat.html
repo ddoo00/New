@@ -3,72 +3,42 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>그래픽팀 온보딩 챗봇</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/quiple/galmuri@1.4/dist/galmuri.css" />
+<title>채팅 — 그래픽팀 온보딩 챗봇</title>
 <link rel="stylesheet" href="style.css" />
-<script>
-  // 바탕화면(index.html)의 창(iframe) 안에서 열린 경우, 이 페이지 자체의 창 틀은 숨기고
-  // 바깥 창의 타이틀바만 남긴다 (이중 타이틀바 방지).
-  if (window.self !== window.top) {
-    document.documentElement.classList.add("embedded");
-  }
-</script>
 </head>
-<body>
-<div class="page">
-<div class="app">
-  <div class="win-bar">
-    <div class="win-dots"><span></span><span></span><span></span></div>
-    <div class="win-title">CHAT.EXE</div>
-  </div>
-  <div class="header">
-    <div>
-      <h1>그래픽팀 온보딩 챗봇</h1>
-      <p>문서화된 내용만 답변하고, 모르는 건 솔직히 모른다고 말해요.</p>
-    </div>
-    <a class="back-link" id="backLink" href="index.html">← 사용법</a>
-  </div>
+<body class="gs-body">
 
-  <div class="categories" id="categories"></div>
-  <div class="messages" id="messages"></div>
-  <div class="suggestions" id="suggestions"></div>
+<header class="gs-nav">
+  <div class="gs-nav-inner">
+    <a href="index.html" class="gs-logo">그래픽팀</a>
+    <nav class="gs-nav-links">
+      <a href="index.html" class="gs-nav-link">온보딩 페이지</a>
+      <a href="faq.html" class="gs-nav-link">자주 묻는 질문</a>
+      <a href="chat.html" class="gs-nav-link active">채팅</a>
+    </nav>
+  </div>
+</header>
 
-  <div class="inputbar">
+<main class="gs-chat-page">
+  <div class="gs-chat-toolbar">
+    <span class="gs-chat-toolbar-title">그래픽팀 온보딩봇</span>
+    <button class="gs-chat-reset" id="resetBtn">새 대화</button>
+  </div>
+  <div class="gs-chat-messages" id="messages"></div>
+  <div class="gs-chat-inputbar">
     <input id="input" type="text" placeholder="예: 내부 컨펌은 어떻게 받아요?" />
     <button id="sendBtn">전송</button>
   </div>
-  <div class="footer-note">
-    <button class="clear-btn" id="clearBtn">대화 초기화</button>
-  </div>
-</div>
-</div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script>
-const DEFAULT_SUGGESTIONS = [
-  "담당 디자이너는 어떻게 정해져요?",
-  "내부 컨펌은 어떻게 요청해요?",
-  "마감일 며칠 전까지 끝내야 해요?",
-  "팀장님이 자리에 없으면 컨펌은 누가 해줘요?",
-  "클라이언트 수정 요청 오면 다시 컨펌받아야 해요?",
-  "결과물은 어떤 형태로 전달해요?"
-];
-
-const CATEGORIES = [
-  { label: "작업 요청 · 컨펌", pending: false, seed: "작업 요청부터 컨펌까지 전체 흐름을 알려줘" },
-  { label: "파일 · 에셋 관리", pending: true, seed: "파일이나 에셋은 어떻게 관리해요?" },
-  { label: "툴 사용법", pending: true, seed: "피그마랑 노션은 어떻게 써야 해요?" },
-  { label: "일정 · 보고", pending: true, seed: "일정 관리랑 보고는 어떻게 해요?" }
-];
-
 const STORAGE_KEY = "onboarding_chatbot_history_v1";
 const messagesEl = document.getElementById("messages");
 const inputEl = document.getElementById("input");
 const sendBtn = document.getElementById("sendBtn");
-const suggestionsEl = document.getElementById("suggestions");
-const categoriesEl = document.getElementById("categories");
-const clearBtn = document.getElementById("clearBtn");
+const resetBtn = document.getElementById("resetBtn");
 
 let history = [];
 let extraKnowledgeText = ""; // admin.html에서 등록한 지식 (Supabase에서 불러옴)
@@ -83,26 +53,31 @@ function saveHistory() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch (e) {}
 }
 
+function scrollToBottom() {
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
 function renderMessages() {
   messagesEl.innerHTML = "";
   if (history.length === 0) {
-    addBubble("bot", "안녕하세요! 그래픽팀 온보딩 챗봇이에요. 작업 요청부터 내부 컨펌까지 궁금한 걸 물어보세요. 아래 카테고리나 예시 질문을 눌러도 되고, 직접 입력해도 돼요.", false);
+    addBubble("bot", "안녕하세요! 그래픽팀 온보딩 챗봇이에요. 작업 요청부터 내부 컨펌, 파일 관리까지 궁금한 걸 물어보세요.", false);
+    return;
   }
   history.forEach(m => {
     const div = document.createElement("div");
-    div.className = "msg " + (m.role === "user" ? "user" : "bot");
+    div.className = "gs-msg " + (m.role === "user" ? "gs-msg-user" : "gs-msg-bot");
     div.textContent = m.text;
     messagesEl.appendChild(div);
   });
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  scrollToBottom();
 }
 
 function addBubble(role, text, persist) {
   const div = document.createElement("div");
-  div.className = "msg " + role;
+  div.className = "gs-msg " + (role === "user" ? "gs-msg-user" : "gs-msg-bot");
   div.textContent = text;
   messagesEl.appendChild(div);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  scrollToBottom();
   if (persist !== false) {
     history.push({ role, text });
     saveHistory();
@@ -111,43 +86,25 @@ function addBubble(role, text, persist) {
 
 function showTyping() {
   const div = document.createElement("div");
-  div.className = "msg typing";
+  div.className = "gs-msg gs-msg-typing";
   div.id = "typingIndicator";
   div.textContent = "답변 작성 중...";
   messagesEl.appendChild(div);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  scrollToBottom();
 }
 function hideTyping() {
   const el = document.getElementById("typingIndicator");
   if (el) el.remove();
 }
 
-function renderSuggestions(list) {
-  suggestionsEl.innerHTML = "";
-  (list || DEFAULT_SUGGESTIONS).forEach(s => {
-    const btn = document.createElement("div");
-    btn.className = "suggestion";
-    btn.textContent = s;
-    btn.onclick = () => { inputEl.value = s; sendMessage(); };
-    suggestionsEl.appendChild(btn);
-  });
-}
-
-function renderCategories() {
-  categoriesEl.innerHTML = "";
-  CATEGORIES.forEach(c => {
-    const chip = document.createElement("div");
-    chip.className = "chip" + (c.pending ? " pending" : "");
-    chip.textContent = c.label + (c.pending ? " (준비중)" : "");
-    chip.onclick = () => { inputEl.value = c.seed; sendMessage(); };
-    categoriesEl.appendChild(chip);
-  });
-}
-
 async function sendMessage() {
   const text = inputEl.value.trim();
   if (!text) return;
   inputEl.value = "";
+  await askQuestion(text);
+}
+
+async function askQuestion(text) {
   sendBtn.disabled = true;
   addBubble("user", text);
   showTyping();
@@ -165,7 +122,7 @@ async function sendMessage() {
     hideTyping();
     const data = await res.json();
     if (!res.ok) {
-      addBubble("error", "오류: " + (data.error || "답변을 가져오지 못했어요. 서버 설정(API 키 등)을 확인해 주세요."), false);
+      addBubble("bot", "오류: " + (data.error || "답변을 가져오지 못했어요. 서버 설정(API 키 등)을 확인해 주세요."), false);
       return;
     }
     const answer = (data.answer || "죄송해요, 답변을 만들지 못했어요.").trim();
@@ -173,7 +130,7 @@ async function sendMessage() {
     logChatToSupabase(text, answer);
   } catch (err) {
     hideTyping();
-    addBubble("error", "네트워크 오류가 났어요. 잠시 후 다시 시도해 주세요.", false);
+    addBubble("bot", "네트워크 오류가 났어요. 잠시 후 다시 시도해 주세요.", false);
   } finally {
     sendBtn.disabled = false;
     inputEl.focus();
@@ -182,40 +139,17 @@ async function sendMessage() {
 
 sendBtn.addEventListener("click", sendMessage);
 inputEl.addEventListener("keydown", e => { if (e.key === "Enter") sendMessage(); });
-clearBtn.addEventListener("click", () => { history = []; saveHistory(); renderMessages(); });
-
-// 바탕화면 창(iframe) 안에서 열린 경우: "← 사용법"을 누르면 화면 속 화면(중첩 바탕화면)으로
-// 이동하는 대신, 이 채팅 창을 닫고 바깥 바탕화면의 "사용법.txt" 창을 바로 띄운다.
-(function setupBackLink() {
-  const backLink = document.getElementById("backLink");
-  if (!backLink) return;
-  if (window.self !== window.top) {
-    backLink.addEventListener("click", e => {
-      e.preventDefault();
-      try {
-        window.parent.document.getElementById("win-chat").hidden = true;
-        window.parent.openInfo("guide");
-      } catch (err) {
-        window.top.location.href = "index.html";
-      }
-    });
-  }
-})();
+resetBtn.addEventListener("click", () => { history = []; saveHistory(); renderMessages(); });
 
 loadHistory();
 renderMessages();
-renderCategories();
-renderSuggestions(DEFAULT_SUGGESTIONS);
-
-// 인기 질문으로 예시 질문 갱신 (Supabase 미설정 시 기본 목록 유지)
-loadPopularQuestions(DEFAULT_SUGGESTIONS, 6).then(renderSuggestions);
 
 // admin.html에서 등록한 지식을 불러와 이번 세션 동안 답변에 반영한다.
 fetchKnowledgeEntries().then(entries => {
   extraKnowledgeText = formatKnowledgeForPrompt(entries);
 });
 
-// index.html에서 ?q=질문 형태로 넘어온 경우, 자동으로 그 질문을 물어본다.
+// index.html / faq.html에서 ?q=질문 형태로 넘어온 경우, 자동으로 그 질문을 물어본다.
 (function autoAskFromQuery() {
   const params = new URLSearchParams(window.location.search);
   const q = params.get("q");
