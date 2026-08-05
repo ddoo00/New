@@ -312,10 +312,17 @@ body {
   font-size: 19px; font-weight: 700; color: #111;
 }
 .gs-chat-reset {
-  font-size: 14px; color: #999; background: none; border: none;
-  text-decoration: underline; font-family: inherit;
+  font-size: 13px; font-weight: 700; color: #1a1a1a; font-family: inherit;
+  background: #fff;
+  border: 2px solid #1a1a1a;
+  border-radius: 999px;
+  padding: 7px 14px;
+  box-shadow: 2px 2px 0 #1a1a1a;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
 }
-.gs-chat-reset:hover { color: #111; }
+.gs-chat-reset:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 #1a1a1a; }
+.gs-chat-reset:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #1a1a1a; }
 
 .gs-chat-messages {
   flex: 1; overflow-y: auto; background: #fbf8f2;
