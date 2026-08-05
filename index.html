@@ -54,6 +54,20 @@ const FALLBACK_FAQ = [
 const faqListEl = document.getElementById("faqList");
 let allFaqItems = [];
 
+// 카테고리별 태그 색상 (고정 카테고리 6종 + 관리자 페이지의 "기타" + 그 외 미지정 색)
+const CATEGORY_COLOR_CLASS = {
+  "작업 요청 · 컨펌": "cat-1",
+  "파일 · 에셋 관리": "cat-2",
+  "리드타임 안내": "cat-3",
+  "구독제 업무": "cat-4",
+  "툴 사용법": "cat-5",
+  "일정 · 보고": "cat-6",
+  "기타": "cat-7"
+};
+function categoryClass(cat) {
+  return CATEGORY_COLOR_CLASS[cat] || "cat-0";
+}
+
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str || "";
@@ -71,7 +85,7 @@ function renderFaqList(items) {
   }
   faqListEl.innerHTML = items.map((item, i) => `
     <button class="gs-faq-row" data-i="${i}">
-      <span class="gs-faq-tag">${escapeHtml(item.category)}</span>
+      <span class="gs-faq-tag ${categoryClass(item.category)}">${escapeHtml(item.category)}</span>
       <span class="gs-faq-q">${escapeHtml(item.title)}</span>
       <span class="gs-faq-arrow">›</span>
     </button>

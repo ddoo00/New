@@ -217,16 +217,25 @@ body {
   border: 2px solid #1a1a1a;
   border-radius: 16px;
   box-shadow: 3px 3px 0 #1a1a1a;
-  cursor: pointer; text-align: left; background: #fff; width: 100%;
+  cursor: pointer; text-align: left; background: #fffaf3; width: 100%;
   font-family: inherit;
   transition: transform .12s ease, box-shadow .12s ease;
 }
 .gs-faq-row:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 #1a1a1a; }
 .gs-faq-row:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #1a1a1a; }
 .gs-faq-tag {
-  flex: none; font-size: 14px; color: #1a1a1a; background: #fff;
-  border: 1.5px solid #1a1a1a; border-radius: 999px; padding: 6px 13px; white-space: nowrap;
+  flex: none;
+  font-family: 'Gaegu', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-size: 16px; font-weight: 700; color: #1a1a1a; background: #f2f2f2;
+  border: 1.5px solid #1a1a1a; border-radius: 999px; padding: 6px 14px; white-space: nowrap;
 }
+.gs-faq-tag.cat-1 { background: #f6c78d; } /* 작업 요청 · 컨펌 — 버튼과 같은 톤 */
+.gs-faq-tag.cat-2 { background: #a9d9f4; } /* 파일 · 에셋 관리 — 하늘색 */
+.gs-faq-tag.cat-3 { background: #ffe28a; } /* 리드타임 안내 — 노랑 */
+.gs-faq-tag.cat-4 { background: #ddccf8; } /* 구독제 업무 — 라벤더 */
+.gs-faq-tag.cat-5 { background: #ffb4ac; } /* 툴 사용법 — 코랄 */
+.gs-faq-tag.cat-6 { background: #bdead0; } /* 일정 · 보고 — 민트 */
+.gs-faq-tag.cat-7 { background: #e8e2d8; } /* 기타 */
 .gs-faq-q { flex: 1; font-size: 18px; color: #111; }
 .gs-faq-arrow { flex: none; color: #999; font-size: 19px; }
 .gs-faq-empty { padding: 40px 4px; text-align: center; color: #999; font-size: 16px; }
