@@ -71,8 +71,9 @@ const KNOWLEDGE_BASE = `
 
 const SYSTEM_PROMPT = `당신은 그래픽팀 신규 입사자를 돕는 사내 프로세스 안내 챗봇입니다. 아래 지식베이스와 답변 규칙을 반드시 지켜서 사용자 질문에 답하세요.\n\n${KNOWLEDGE_BASE}`;
 
-// 무료 티어에서 쓸 수 있는 모델. 필요하면 다른 Gemini 모델 이름으로 바꿔도 된다.
-const GEMINI_MODEL = "gemini-2.5-flash";
+// 항상 최신 안정 버전 Flash 모델을 가리키는 별칭. 특정 버전명을 박아두면
+// 나중에 그 버전이 지원 종료될 때 다시 에러가 날 수 있어 -latest 별칭을 사용한다.
+const GEMINI_MODEL = "gemini-flash-latest";
 
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
