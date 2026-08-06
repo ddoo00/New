@@ -464,7 +464,7 @@ const SYSTEM_PROMPT = `당신은 그래픽팀 신규 입사자를 돕는 사내 
 // invalid argument" 오류를 냈다. 그래서 실제 존재하는 안정 버전 모델명을 직접 지정한다.
 // 나중에 이 모델도 지원 종료되면, https://ai.google.dev/gemini-api/docs/models 에서
 // "Free Tier: Free of charge"로 표시된 최신 Flash 계열 모델명으로 교체하면 된다.
-const GEMINI_MODEL = "gemini-3.5-flash";
+const GEMINI_MODEL = "gemini-3.5-flash-lite"; // 응답 속도 개선을 위해 flash-lite로 변경 (2026-08-06)
 
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
